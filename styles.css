@@ -804,6 +804,7 @@ em {
 @media (max-width: 900px) {
   .topbar { grid-template-columns: auto 1fr; }
   .ticker { display: none; }
+  .menu { justify-content: flex-end; }
   .grid { grid-template-columns: repeat(2, 1fr); }
   .hero { padding-left: 5vw; padding-right: 5vw; }
   .hero-tags { left: 5vw; }
@@ -812,6 +813,12 @@ em {
 }
 
 @media (max-width: 640px) {
+  .works .sec-title {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
   .topbar { height: 50px; padding: 0 16px; gap: 12px; }
   .brand { font-size: 10px; }
   .menu { gap: 12px; }
