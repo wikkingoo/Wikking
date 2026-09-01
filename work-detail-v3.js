@@ -808,7 +808,7 @@
         fig.className = "dd-item reveal";
 
         var img = document.createElement("img");
-        img.src = "assets/" + ddCfg.prefix + ("0" + di).slice(-2) + ".jpg?v=20260901-1";
+        img.src = "assets/" + ddCfg.prefix + ("0" + di).slice(-2) + ".jpg?v=20260902-1";
         img.alt = "Design detail " + di;
         img.loading = "lazy";
 
@@ -874,24 +874,52 @@
       }
     }
 
-    /* Video row: autoplay (muted) videos at the end of Design Details */
+    /* Video row: autoplay (muted) videos at the end of Design Details.
+       Lazy: only start downloading when the row is near the viewport. */
     if (ddCfg.videos && ddCfg.videos.length) {
       var vrow = document.createElement("div");
       vrow.className = "dd-videos reveal";
+      var vids = [];
       ddCfg.videos.forEach(function (src, vi) {
         var vcell = document.createElement("figure");
         vcell.className = "dd-video-item";
         var vid = document.createElement("video");
         vid.src = src;
         vid.muted = true;
+        vid.setAttribute("muted", "");
         vid.loop = true;
-        vid.autoplay = true;
         vid.setAttribute("playsinline", "");
-        vid.preload = "auto";
+        vid.preload = "none";
         vcell.appendChild(vid);
         vrow.appendChild(vcell);
+        vids.push(vid);
       });
       ddList.appendChild(vrow);
+
+      function playVids() {
+        vids.forEach(function (v) {
+          if (v.getAttribute("preload") === "none") {
+            v.setAttribute("preload", "auto");
+            v.load();
+          }
+          var p = v.play();
+          if (p && p.catch) p.catch(function () {});
+        });
+      }
+      function pauseVids() {
+        vids.forEach(function (v) { v.pause(); });
+      }
+      if ("IntersectionObserver" in window) {
+        var vio = new IntersectionObserver(function (entries) {
+          entries.forEach(function (en) {
+            if (en.isIntersecting) playVids();
+            else pauseVids();
+          });
+        }, { rootMargin: "300px 0px" });
+        vio.observe(vrow);
+      } else {
+        playVids();
+      }
     }
 
     dd.classList.add("show");
