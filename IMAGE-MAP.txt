@@ -1,0 +1,20 @@
+IMAGE MAP — random assignment (seed 20260813)
+
+hero-1.jpg  <-  IMG_4748.JPG
+hero-2.jpg  <-  IMG_4749.JPG
+hero-3.jpg  <-  2.2.png
+hero-4.jpg  <-  geiwim87x4ffxjr14k5p.png
+hero-5.jpg  <-  4.2.PNG
+hero-6.jpg  <-  黄伟晴-13.jpg
+work-01.jpg  <-  黄伟晴-8.jpg
+work-02.jpg  <-  IMG_4750.JPG
+work-03.jpg  <-  4.1.PNG
+work-04.jpg  <-  IMG_4746.JPG
+work-05.jpg  <-  IMG_4747.JPG
+work-06.jpg  <-  1.2.PNG
+work-07.jpg  <-  2.1.PNG
+work-08.jpg  <-  111.JPG
+work-09.jpg  <-  1.1.PNG
+work-10.jpg  <-  IMG_4761.JPG
+work-11.jpg  <-  IMG_4744.JPG
+work-12.jpg  <-  3.1.PNG
