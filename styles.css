@@ -426,10 +426,6 @@ em {
   color: var(--ink);
 }
 
-.works .sec-title {
-  font-family: var(--cjk);
-}
-
 .sec-meta {
   font-size: 9px;
   letter-spacing: 0.2em;
@@ -813,12 +809,6 @@ em {
 }
 
 @media (max-width: 640px) {
-  .works .sec-title {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
-  }
   .topbar { height: 50px; padding: 0 16px; gap: 12px; }
   .brand { font-size: 10px; }
   .menu { gap: 12px; }
