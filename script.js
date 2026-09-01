@@ -31,8 +31,9 @@
   window.addEventListener("scroll", refreshHeroRect, { passive: true });
   window.addEventListener("resize", refreshHeroRect);
 
-  function spawnTrail(x, y) {
-    if (activeTrail.length >= MAX_TRAIL) {
+  function spawnTrail(x, y, size, cap) {
+    var limit = cap || MAX_TRAIL;
+    if (activeTrail.length >= limit) {
       var oldest = activeTrail.shift();
       if (oldest && oldest.parentNode) oldest.parentNode.removeChild(oldest);
     }
@@ -41,7 +42,7 @@
     img.className = "trail-img";
     img.alt = "";
 
-    var size = 140 + Math.random() * 110;
+    size = size || 140 + Math.random() * 110;
     var rot = Math.round(Math.random() * 14 - 7);
     var dur = (1.1 + Math.random() * 0.5).toFixed(2);
 
@@ -83,13 +84,50 @@
     activeTrail.length = 0;
   });
 
-  /* Touch fallback: quietly cycle images inside the hero */
+  /* Touch: finger-follow trail inside the hero (small images).
+     Vertical swipes are released to normal page scroll. */
   if (window.matchMedia("(pointer: coarse)").matches) {
-    setInterval(function () {
-      var x = window.innerWidth * (0.3 + Math.random() * 0.4);
-      var y = window.innerHeight * (0.38 + Math.random() * 0.22);
-      spawnTrail(x, y);
-    }, 1700);
+    var tActive = false;
+    var tScroll = false;
+    var tStart = { x: 0, y: 0 };
+
+    hero.addEventListener("touchstart", function (e) {
+      if (e.touches.length !== 1) return;
+      tActive = true;
+      tScroll = false;
+      tStart.x = e.touches[0].clientX;
+      tStart.y = e.touches[0].clientY;
+    }, { passive: true });
+
+    hero.addEventListener("touchmove", function (e) {
+      if (!tActive || e.touches.length !== 1) return;
+      var t = e.touches[0];
+      var dx = t.clientX - tStart.x;
+      var dy = t.clientY - tStart.y;
+      /* once the gesture becomes a vertical swipe, let the page scroll */
+      if (!tScroll && Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 10) {
+        tScroll = true;
+        return;
+      }
+      if (tScroll) return;
+      if (
+        t.clientX < heroRect.left || t.clientX > heroRect.right ||
+        t.clientY < heroRect.top || t.clientY > heroRect.bottom
+      ) {
+        return;
+      }
+      var now = performance.now();
+      if (now - lastSpawn < 70) return;
+      lastSpawn = now;
+      spawnTrail(t.clientX, t.clientY, 80 + Math.random() * 40, 6);
+    }, { passive: true });
+
+    function endTouch() {
+      tActive = false;
+      tScroll = false;
+    }
+    hero.addEventListener("touchend", endTouch);
+    hero.addEventListener("touchcancel", endTouch);
   }
 
   /* ---------- Work cards open their detail page ---------- */
