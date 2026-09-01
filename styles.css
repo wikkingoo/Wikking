@@ -310,14 +310,6 @@ em {
 
 .badge.mono { font-family: var(--mono); color: var(--muted); font-size: 9px; }
 
-.pulse-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--acid);
-  animation: pulse 1.8s ease-in-out infinite;
-}
-
 .hero-foot {
   position: absolute;
   left: 6vw;
@@ -340,10 +332,6 @@ em {
 
 @keyframes rise { to { transform: translateY(0); } }
 @keyframes fadeIn { to { opacity: 1; } }
-@keyframes pulse {
-  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(0, 166, 255, 0.5); }
-  50% { opacity: 0.65; box-shadow: 0 0 0 5px rgba(0, 166, 255, 0); }
-}
 @keyframes bounce {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(4px); }
