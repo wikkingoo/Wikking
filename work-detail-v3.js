@@ -145,11 +145,11 @@
   var DESIGN_DETAILS = {
     1: { count: 11, label: "WORK 01", prefix: "dd-" },
     2: { count: 9, label: "WORK 02", prefix: "dd2-",
-      videos: [
-        "assets/work2-video-1.mp4",
-        "assets/work2-video-2.mp4",
-        "assets/work2-video-3.mp4",
-        "assets/work2-video-4.mp4"
+      gifs: [
+        "assets/work2-gif-1.gif",
+        "assets/work2-gif-2.gif",
+        "assets/work2-gif-3.gif",
+        "assets/work2-gif-4.gif"
       ] },
     3: {
       count: 31,
@@ -874,52 +874,22 @@
       }
     }
 
-    /* Video row: autoplay (muted) videos at the end of Design Details.
-       Lazy: only start downloading when the row is near the viewport. */
-    if (ddCfg.videos && ddCfg.videos.length) {
+    /* GIF row: looping previews at the end of Design Details (lazy images) */
+    if (ddCfg.gifs && ddCfg.gifs.length) {
       var vrow = document.createElement("div");
       vrow.className = "dd-videos reveal";
-      var vids = [];
-      ddCfg.videos.forEach(function (src, vi) {
+      ddCfg.gifs.forEach(function (src, gi) {
         var vcell = document.createElement("figure");
         vcell.className = "dd-video-item";
-        var vid = document.createElement("video");
-        vid.src = src;
-        vid.muted = true;
-        vid.setAttribute("muted", "");
-        vid.loop = true;
-        vid.setAttribute("playsinline", "");
-        vid.preload = "none";
-        vcell.appendChild(vid);
+        var img = document.createElement("img");
+        img.src = src;
+        img.alt = "";
+        img.loading = "lazy";
+        img.decoding = "async";
+        vcell.appendChild(img);
         vrow.appendChild(vcell);
-        vids.push(vid);
       });
       ddList.appendChild(vrow);
-
-      function playVids() {
-        vids.forEach(function (v) {
-          if (v.getAttribute("preload") === "none") {
-            v.setAttribute("preload", "auto");
-            v.load();
-          }
-          var p = v.play();
-          if (p && p.catch) p.catch(function () {});
-        });
-      }
-      function pauseVids() {
-        vids.forEach(function (v) { v.pause(); });
-      }
-      if ("IntersectionObserver" in window) {
-        var vio = new IntersectionObserver(function (entries) {
-          entries.forEach(function (en) {
-            if (en.isIntersecting) playVids();
-            else pauseVids();
-          });
-        }, { rootMargin: "300px 0px" });
-        vio.observe(vrow);
-      } else {
-        playVids();
-      }
     }
 
     dd.classList.add("show");

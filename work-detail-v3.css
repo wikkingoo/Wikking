@@ -333,7 +333,8 @@
   margin: 0;
 }
 
-.dd-video-item video {
+.dd-video-item video,
+.dd-video-item img {
   display: block;
   width: 100%;
   height: auto;
@@ -345,7 +346,8 @@
   z-index: 2;
 }
 
-.dd-video-item:nth-child(3) video {
+.dd-video-item:nth-child(3) video,
+.dd-video-item:nth-child(3) img {
   transform: scale(1.08);
   transform-origin: center;
 }
