@@ -9,13 +9,30 @@
   /* ---------- Hero: images follow the cursor (hero only) ---------- */
 
   var HERO_IMGS = [];
-  for (var h = 1; h <= 14; h++) HERO_IMGS.push("assets/hero-" + ("0" + h).slice(-2) + ".jpg");
-  /* random display order */
+  var HERO_IMGS_SMALL = []; /* lighter set for touch devices */
+  for (var h = 1; h <= 14; h++) {
+    var hName = ("0" + h).slice(-2);
+    HERO_IMGS.push("assets/hero-" + hName + ".jpg");
+    HERO_IMGS_SMALL.push("assets/hero-m" + hName + ".jpg");
+  }
+  /* random display order (both sets share the same shuffle) */
   for (var ri = HERO_IMGS.length - 1; ri > 0; ri--) {
     var rj = Math.floor(Math.random() * (ri + 1));
     var tmp = HERO_IMGS[ri];
     HERO_IMGS[ri] = HERO_IMGS[rj];
     HERO_IMGS[rj] = tmp;
+    var tmp2 = HERO_IMGS_SMALL[ri];
+    HERO_IMGS_SMALL[ri] = HERO_IMGS_SMALL[rj];
+    HERO_IMGS_SMALL[rj] = tmp2;
+  }
+
+  /* cycle instead of random-picking: every image shows once before repeating */
+  var heroIdx = 0;
+  function nextHeroSrc(list) {
+    var arr = list || HERO_IMGS;
+    var src = arr[heroIdx % arr.length];
+    heroIdx++;
+    return src;
   }
 
   var activeTrail = [];
@@ -31,7 +48,7 @@
   window.addEventListener("scroll", refreshHeroRect, { passive: true });
   window.addEventListener("resize", refreshHeroRect);
 
-  function spawnTrail(x, y, size, cap) {
+  function spawnTrail(x, y, size, cap, list) {
     var limit = cap || MAX_TRAIL;
     if (activeTrail.length >= limit) {
       var oldest = activeTrail.shift();
@@ -41,6 +58,7 @@
     var img = new Image();
     img.className = "trail-img";
     img.alt = "";
+    img.decoding = "async";
 
     size = size || 140 + Math.random() * 110;
     var rot = Math.round(Math.random() * 14 - 7);
@@ -51,7 +69,7 @@
     img.style.top = Math.round(y - size / 2) + "px";
     img.style.setProperty("--rot", rot + "deg");
     img.style.animationDuration = dur + "s";
-    img.src = HERO_IMGS[Math.floor(Math.random() * HERO_IMGS.length)];
+    img.src = nextHeroSrc(list);
 
     document.body.appendChild(img);
     activeTrail.push(img);
@@ -86,13 +104,36 @@
 
   /* Touch: finger-follow trail inside the hero (small images).
      Vertical swipes are released to normal page scroll. */
-  if (window.matchMedia("(pointer: coarse)").matches) {
+  var isTouchDevice =
+    "ontouchstart" in window ||
+    (navigator.maxTouchPoints || 0) > 0 ||
+    window.matchMedia("(pointer: coarse)").matches;
+  if (isTouchDevice) {
     var tActive = false;
     var tScroll = false;
     var tStart = { x: 0, y: 0 };
 
+    /* warm the light image set so the first touches paint instantly */
+    function warmTrailImages() {
+      for (var wi = 0; wi < HERO_IMGS_SMALL.length; wi++) {
+        var wim = new Image();
+        wim.decoding = "async";
+        wim.src = HERO_IMGS_SMALL[wi];
+      }
+    }
+    if ("requestIdleCallback" in window) {
+      window.requestIdleCallback(warmTrailImages, { timeout: 2000 });
+    } else {
+      setTimeout(warmTrailImages, 800);
+    }
+
     hero.addEventListener("touchstart", function (e) {
       if (e.touches.length !== 1) return;
+      /* leave the screen-edge swipe zone to the browser / OS (back gesture) */
+      if (e.touches[0].clientX < 24 || e.touches[0].clientX > window.innerWidth - 24) {
+        tActive = false;
+        return;
+      }
       tActive = true;
       tScroll = false;
       tStart.x = e.touches[0].clientX;
@@ -104,8 +145,9 @@
       var t = e.touches[0];
       var dx = t.clientX - tStart.x;
       var dy = t.clientY - tStart.y;
-      /* once the gesture becomes a vertical swipe, let the page scroll */
-      if (!tScroll && Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 10) {
+      /* judge by the whole gesture: a mostly-vertical swipe scrolls the page,
+         a mostly-horizontal one keeps drawing the trail */
+      if (!tScroll && Math.abs(dy) > 14 && Math.abs(dy) > Math.abs(dx) * 1.2) {
         tScroll = true;
         return;
       }
@@ -117,9 +159,9 @@
         return;
       }
       var now = performance.now();
-      if (now - lastSpawn < 70) return;
+      if (now - lastSpawn < 55) return;
       lastSpawn = now;
-      spawnTrail(t.clientX, t.clientY, 80 + Math.random() * 40, 6);
+      spawnTrail(t.clientX, t.clientY, 80 + Math.random() * 40, 10, HERO_IMGS_SMALL);
     }, { passive: true });
 
     function endTouch() {

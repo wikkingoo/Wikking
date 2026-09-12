@@ -1127,6 +1127,57 @@
       { passive: false }
     );
 
+    /* Touch: horizontal finger swipe drives the fan (mobile), vertical
+       swipes keep scrolling the page as usual */
+    var tFanMode = "";
+    var tFanStartX = 0;
+    var tFanStartY = 0;
+    var tFanLastX = 0;
+
+    sticky.addEventListener(
+      "touchstart",
+      function (e) {
+        if (reduced || e.touches.length !== 1) return;
+        tFanMode = "";
+        tFanStartX = tFanLastX = e.touches[0].clientX;
+        tFanStartY = e.touches[0].clientY;
+      },
+      { passive: true }
+    );
+
+    sticky.addEventListener(
+      "touchmove",
+      function (e) {
+        if (reduced || e.touches.length !== 1) return;
+        var tx = e.touches[0].clientX;
+        var ty = e.touches[0].clientY;
+        var dxTotal = tx - tFanStartX;
+        var dyTotal = ty - tFanStartY;
+
+        if (!tFanMode) {
+          if (Math.abs(dxTotal) > 8 && Math.abs(dxTotal) > Math.abs(dyTotal) * 1.2) {
+            tFanMode = "fan";
+          } else if (Math.abs(dyTotal) > 8) {
+            tFanMode = "scroll";
+          }
+        }
+        if (tFanMode !== "fan") return;
+
+        var step = tx - tFanLastX;
+        tFanLastX = tx;
+        fanPos = Math.max(FAN_MIN, Math.min(FAN_MAX, fanPos - step * 0.02));
+        update();
+        e.preventDefault();
+      },
+      { passive: false }
+    );
+
+    function endFanTouch() {
+      tFanMode = "";
+    }
+    sticky.addEventListener("touchend", endFanTouch);
+    sticky.addEventListener("touchcancel", endFanTouch);
+
     layout();
     window.addEventListener("resize", layout);
   }

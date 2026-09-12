@@ -343,6 +343,8 @@ em {
   z-index: 40;
   pointer-events: none;
   object-fit: cover;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
   filter: grayscale(0.55) contrast(1.12) brightness(0.92);
   border: 1px solid rgba(242, 240, 234, 0.14);
   box-shadow: 0 26px 60px rgba(0, 0, 0, 0.6);
