@@ -475,11 +475,13 @@ em {
   transition: opacity 0.7s ease, transform 0.9s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
-.card:hover .card-media img.p {
+.card:hover .card-media img.p,
+.card.is-revealed .card-media img.p {
   transform: scale(1.04);
 }
 
-.card:hover .card-media img.d {
+.card:hover .card-media img.d,
+.card.is-revealed .card-media img.d {
   opacity: 1;
   transform: scale(1);
 }

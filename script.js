@@ -177,25 +177,65 @@
 
   /* ---------- Work cards open their detail page ---------- */
 
-  Array.prototype.forEach.call(document.querySelectorAll(".card"), function (card) {
-    /* cover image is loaded on demand — phones never download hover shots */
+  function loadHoverImg(img) {
+    if (!img || img.getAttribute("src")) return;
+    img.setAttribute("src", img.getAttribute("data-src"));
+    var hoverSet = img.getAttribute("data-srcset");
+    if (hoverSet) img.setAttribute("srcset", hoverSet);
+  }
+
+  var cardEls = Array.prototype.slice.call(document.querySelectorAll(".card"));
+  var hoverImgs = [];
+
+  function revealCard(card) {
+    var img = card.querySelector("img.d[data-src]");
+    if (!img) return false;
+    loadHoverImg(img);
+    cardEls.forEach(function (other) {
+      if (other !== card) other.classList.remove("is-revealed");
+    });
+    card.classList.add("is-revealed");
+    return true;
+  }
+
+  /* mouse/trackpad: warm the covers so the first hover switches instantly */
+  if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+    cardEls.forEach(function (card) {
+      var img = card.querySelector("img.d[data-src]");
+      if (img) hoverImgs.push(img);
+    });
+    var warmHoverImgs = function () {
+      var hi = 0;
+      (function nextHover() {
+        if (hi >= hoverImgs.length) return;
+        loadHoverImg(hoverImgs[hi++]);
+        setTimeout(nextHover, 200); /* staggered, never blocks the page */
+      })();
+    };
+    if ("requestIdleCallback" in window) {
+      window.requestIdleCallback(warmHoverImgs, { timeout: 3000 });
+    } else {
+      setTimeout(warmHoverImgs, 1200);
+    }
+  }
+
+  cardEls.forEach(function (card) {
     var hoverImg = card.querySelector("img.d[data-src]");
     if (hoverImg) {
-      var loadHover = function () {
-        if (hoverImg.getAttribute("src")) return;
-        hoverImg.setAttribute("src", hoverImg.getAttribute("data-src"));
-        var hoverSet = hoverImg.getAttribute("data-srcset");
-        if (hoverSet) hoverImg.setAttribute("srcset", hoverSet);
-      };
       card.addEventListener("pointerenter", function (e) {
         if (!e.pointerType || e.pointerType === "mouse" || e.pointerType === "pen") {
-          loadHover();
+          loadHoverImg(hoverImg);
         }
       });
     }
 
     card.addEventListener("click", function (e) {
       if (e.target.closest("a")) return;
+      /* touch devices: first tap reveals the second image (hover equivalent),
+         tapping again opens the project */
+      if (isTouchDevice && !card.classList.contains("is-revealed")) {
+        if (revealCard(card)) return;
+      }
       var n = card.getAttribute("data-work");
       if (n) window.location.href = "work-detail-v3.html?work=" + n;
     });
