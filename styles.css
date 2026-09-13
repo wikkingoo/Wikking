@@ -59,7 +59,7 @@ em {
   pointer-events: none;
   opacity: 0.08;
   mix-blend-mode: overlay;
-  background-image: url("assets/noise.png");
+  background-image: url("assets/noise-2.png");
   background-size: 220px 220px;
 }
 
