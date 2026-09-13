@@ -80,6 +80,15 @@
   var CAR_COVER = {
     5: "assets/work-10-v2.jpg"
   };
+  /* Light covers for the "other projects" strip (cards render at 140px) */
+  var CAR_SMALL = {
+    1: "assets/work-01-sm.jpg",
+    2: "assets/work-02-sm.jpg",
+    3: "assets/work-03-sm.jpg",
+    4: "assets/work-04-sm.jpg",
+    5: "assets/work-10-v2-sm.jpg",
+    6: "assets/work-06-sm.jpg"
+  };
   function workDetailImg(n) { return "assets/work-" + pad(n) + "-d.jpg"; }
   function workVariantImg(n, v) { return "assets/work-" + pad(n) + "-" + v + ".jpg"; }
 
@@ -1206,51 +1215,51 @@
   var thumbsList;
   if (id === 1) {
     thumbsList = [
-      { src: "assets/g-01.jpg", label: "Main" },
-      { src: "assets/g-02.jpg", label: "View 2" },
-      { src: "assets/g-03.jpg", label: "View 3" },
-      { src: "assets/g-04.jpg", label: "View 4" },
-      { src: "assets/g-05.jpg", label: "View 5" }
+      { src: "assets/g-01-s.jpg", label: "Main" },
+      { src: "assets/g-02-s.jpg", label: "View 2" },
+      { src: "assets/g-03-s.jpg", label: "View 3" },
+      { src: "assets/g-04-s.jpg", label: "View 4" },
+      { src: "assets/g-05-s.jpg", label: "View 5" }
     ];
   } else if (id === 2) {
     thumbsList = [
-      { src: "assets/g2-01.jpg", label: "Main" },
-      { src: "assets/g2-02.jpg", label: "View 2" },
-      { src: "assets/g2-03.jpg", label: "View 3", pos: "50% 78%" },
-      { src: "assets/g2-04.jpg", label: "View 4", pos: "50% 78%" },
-      { src: "assets/g2-05.jpg", label: "View 5", pos: "50% 78%" }
+      { src: "assets/g2-01-s.jpg", label: "Main" },
+      { src: "assets/g2-02-s.jpg", label: "View 2" },
+      { src: "assets/g2-03-s.jpg", label: "View 3", pos: "50% 78%" },
+      { src: "assets/g2-04-s.jpg", label: "View 4", pos: "50% 78%" },
+      { src: "assets/g2-05-s.jpg", label: "View 5", pos: "50% 78%" }
     ];
   } else if (id === 3) {
     thumbsList = [
-      { src: "assets/g3-01.jpg", label: "Main" },
-      { src: "assets/g3-02.jpg", label: "View 2" },
-      { src: "assets/g3-03-v2.jpg", label: "View 3" },
-      { src: "assets/g3-04.jpg", label: "View 4" },
-      { src: "assets/g3-05.jpg", label: "View 5" }
+      { src: "assets/g3-01-s.jpg", label: "Main" },
+      { src: "assets/g3-02-s.jpg", label: "View 2" },
+      { src: "assets/g3-03-v2-s.jpg", label: "View 3" },
+      { src: "assets/g3-04-s.jpg", label: "View 4" },
+      { src: "assets/g3-05-s.jpg", label: "View 5" }
     ];
   } else if (id === 4) {
     thumbsList = [
-      { src: "assets/g4-01.jpg", label: "Main" },
-      { src: "assets/g4-02.jpg", label: "View 2" },
-      { src: "assets/g4-03.jpg", label: "View 3" },
-      { src: "assets/g4-04.jpg", label: "View 4" },
-      { src: "assets/g4-05.jpg", label: "View 5" }
+      { src: "assets/g4-01-s.jpg", label: "Main" },
+      { src: "assets/g4-02-s.jpg", label: "View 2" },
+      { src: "assets/g4-03-s.jpg", label: "View 3" },
+      { src: "assets/g4-04-s.jpg", label: "View 4" },
+      { src: "assets/g4-05-s.jpg", label: "View 5" }
     ];
   } else if (id === 5) {
     thumbsList = [
-      { src: "assets/g5-01.jpg", label: "Main" },
-      { src: "assets/g5-02.jpg", label: "View 2" },
-      { src: "assets/g5-03.jpg", label: "View 3" },
-      { src: "assets/g5-04.jpg", label: "View 4" },
-      { src: "assets/g5-05.jpg", label: "View 5" }
+      { src: "assets/g5-01-s.jpg", label: "Main" },
+      { src: "assets/g5-02-s.jpg", label: "View 2" },
+      { src: "assets/g5-03-s.jpg", label: "View 3" },
+      { src: "assets/g5-04-s.jpg", label: "View 4" },
+      { src: "assets/g5-05-s.jpg", label: "View 5" }
     ];
   } else if (id === 6) {
     thumbsList = [
-      { src: "assets/g6-01.jpg", label: "Main" },
-      { src: "assets/g6-02.jpg", label: "View 2" },
-      { src: "assets/g6-03.jpg", label: "View 3" },
-      { src: "assets/g6-04.jpg", label: "View 4" },
-      { src: "assets/g6-05.jpg", label: "View 5" }
+      { src: "assets/g6-01-s.jpg", label: "Main" },
+      { src: "assets/g6-02-s.jpg", label: "View 2" },
+      { src: "assets/g6-03-s.jpg", label: "View 3" },
+      { src: "assets/g6-04-s.jpg", label: "View 4" },
+      { src: "assets/g6-05-s.jpg", label: "View 5" }
     ];
   } else {
     thumbsList = [
@@ -1381,7 +1390,7 @@
     var media = document.createElement("div");
     media.className = "car-media";
     var img = document.createElement("img");
-    img.src = CAR_COVER[m] || workImg(m);
+    img.src = CAR_SMALL[m] || CAR_COVER[m] || workImg(m);
     img.alt = p.title;
     img.loading = "lazy";
     media.appendChild(img);
