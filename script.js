@@ -115,11 +115,14 @@
 
     /* warm the light image set so the first touches paint instantly */
     function warmTrailImages() {
-      for (var wi = 0; wi < HERO_IMGS_SMALL.length; wi++) {
+      var wi = 0;
+      (function step() {
+        if (wi >= HERO_IMGS_SMALL.length) return;
         var wim = new Image();
         wim.decoding = "async";
-        wim.src = HERO_IMGS_SMALL[wi];
-      }
+        wim.src = HERO_IMGS_SMALL[wi++];
+        setTimeout(step, 120); /* staggered: never competes with the page load */
+      })();
     }
     if ("requestIdleCallback" in window) {
       window.requestIdleCallback(warmTrailImages, { timeout: 2000 });
@@ -175,6 +178,22 @@
   /* ---------- Work cards open their detail page ---------- */
 
   Array.prototype.forEach.call(document.querySelectorAll(".card"), function (card) {
+    /* cover image is loaded on demand — phones never download hover shots */
+    var hoverImg = card.querySelector("img.d[data-src]");
+    if (hoverImg) {
+      var loadHover = function () {
+        if (hoverImg.getAttribute("src")) return;
+        hoverImg.setAttribute("src", hoverImg.getAttribute("data-src"));
+        var hoverSet = hoverImg.getAttribute("data-srcset");
+        if (hoverSet) hoverImg.setAttribute("srcset", hoverSet);
+      };
+      card.addEventListener("pointerenter", function (e) {
+        if (!e.pointerType || e.pointerType === "mouse" || e.pointerType === "pen") {
+          loadHover();
+        }
+      });
+    }
+
     card.addEventListener("click", function (e) {
       if (e.target.closest("a")) return;
       var n = card.getAttribute("data-work");
