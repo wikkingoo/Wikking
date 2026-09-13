@@ -187,17 +187,6 @@
   var cardEls = Array.prototype.slice.call(document.querySelectorAll(".card"));
   var hoverImgs = [];
 
-  function revealCard(card) {
-    var img = card.querySelector("img.d[data-src]");
-    if (!img) return false;
-    loadHoverImg(img);
-    cardEls.forEach(function (other) {
-      if (other !== card) other.classList.remove("is-revealed");
-    });
-    card.classList.add("is-revealed");
-    return true;
-  }
-
   /* mouse/trackpad: warm the covers so the first hover switches instantly */
   if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
     cardEls.forEach(function (card) {
@@ -219,6 +208,45 @@
     }
   }
 
+  /* touch-only devices (no hover): switch each card's two images by itself
+     while the card is on screen — same look as hovering, no tap needed */
+  if (window.matchMedia("(hover: none)").matches && "IntersectionObserver" in window) {
+    cardEls.forEach(function (card, ci) {
+      var img = card.querySelector("img.d[data-src]");
+      if (!img) return;
+      var timer = null;
+      var first = null;
+      var shown = false;
+      var inView = false;
+
+      function flip() {
+        shown = !shown;
+        card.classList.toggle("is-revealed", shown);
+      }
+      function startCycle() {
+        if (timer) return;
+        loadHoverImg(img);
+        first = setTimeout(function () { if (inView) flip(); }, 800 + (ci % 6) * 420);
+        timer = setInterval(function () { if (inView) flip(); }, 4200);
+      }
+      function stopCycle() {
+        if (first) { clearTimeout(first); first = null; }
+        if (timer) { clearInterval(timer); timer = null; }
+        shown = false;
+        card.classList.remove("is-revealed");
+      }
+
+      var cardIO = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+          inView = en.isIntersecting;
+          if (inView) startCycle();
+          else stopCycle();
+        });
+      }, { rootMargin: "120px 0px" });
+      cardIO.observe(card);
+    });
+  }
+
   cardEls.forEach(function (card) {
     var hoverImg = card.querySelector("img.d[data-src]");
     if (hoverImg) {
@@ -231,11 +259,6 @@
 
     card.addEventListener("click", function (e) {
       if (e.target.closest("a")) return;
-      /* touch devices: first tap reveals the second image (hover equivalent),
-         tapping again opens the project */
-      if (isTouchDevice && !card.classList.contains("is-revealed")) {
-        if (revealCard(card)) return;
-      }
       var n = card.getAttribute("data-work");
       if (n) window.location.href = "work-detail-v3.html?work=" + n;
     });
